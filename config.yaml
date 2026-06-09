@@ -1,0 +1,30 @@
+# Path to the directory containing .lif container files (relative to project root or absolute)
+raw_data_directory: data
+
+# Directory where per-image feature CSV files are written
+results_directory: results
+
+# Channel index used for CellposeSAM-based 3D nuclei segmentation
+nuclei_channel: 0
+
+# Inclusive min/max nuclei label volume for filtering predicted nuclei
+min_max_nuclei_volume: [1500, 25000]
+
+# Cytoplasm simulation parameters (dilate nuclei, optionally erode first)
+cytoplasm_dilation_radius: 2
+cytoplasm_erosion_radius: 0
+
+# Marker channels: [name, channel_index]
+markers:
+  - [DAPI, 0]
+  - [GFP_CAFs, 1]
+  - [AF568_TUB, 2]
+  - [AF647_CXCL8, 3]
+
+# Skip images whose output CSV already exists in results_directory
+skip_existing_csv: true
+
+logging:
+  level: INFO
+  log_file: results/loop.log
+  console: true
