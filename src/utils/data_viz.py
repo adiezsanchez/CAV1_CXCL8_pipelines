@@ -28,7 +28,9 @@ def map_df_column_to_labels(
     normalize: bool = False,
     clip_percentiles: Optional[Tuple[float, float]] = (1, 99),
     background_value: float = 0.0,
-    colormap: str = "turbo",   
+    colormap: str = "turbo",
+    colormap_vmin: Optional[float] = None,
+    colormap_vmax: Optional[float] = None,
     visualize: bool = False,
     viewer=None,
     layer_name: Optional[str] = None,
@@ -68,7 +70,17 @@ def map_df_column_to_labels(
 
         colormap (str, optional):
             Colormap to use for visualization. Default is "turbo".
-            
+
+        colormap_vmin (float or None, optional):
+            Colormap minimum for Napari contrast limits. If None, Napari uses
+            auto-contrast unless ``colormap_vmax`` is set, in which case the
+            minimum is taken from foreground mapped values.
+
+        colormap_vmax (float or None, optional):
+            Colormap maximum for Napari contrast limits. If None, Napari uses
+            auto-contrast unless ``colormap_vmin`` is set, in which case the
+            maximum is taken from foreground mapped values.
+
         visualize (bool, optional):
             If True, display the result in Napari.
 
@@ -129,13 +141,24 @@ def map_df_column_to_labels(
 
         v = _resolve_napari_viewer(viewer)
         name = layer_name if layer_name is not None else value_column
-        add_or_update_image_layer(
-            v,
-            out,
-            name=name,
-            colormap=colormap,
-            blending="additive",
-        )
+        layer_kwargs = {
+            "colormap": colormap,
+            "blending": "additive",
+        }
+        if colormap_vmin is not None or colormap_vmax is not None:
+            foreground = out[nuclei_labels > 0]
+            vmin = (
+                colormap_vmin
+                if colormap_vmin is not None
+                else float(np.nanmin(foreground))
+            )
+            vmax = (
+                colormap_vmax
+                if colormap_vmax is not None
+                else float(np.nanmax(foreground))
+            )
+            layer_kwargs["contrast_limits"] = (vmin, vmax)
+        add_or_update_image_layer(v, out, name=name, **layer_kwargs)
 
     return out
 

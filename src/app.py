@@ -244,7 +244,7 @@ def _(
 
 @app.cell
 def _(cytoplasm_labels, map_df_column_to_labels, props_df, viewer):
-    # Visualize FRET ratios
+    # Visualize GFP mean intensity
     map_df_column_to_labels(
         cytoplasm_labels,
         props_df,
@@ -258,12 +258,14 @@ def _(cytoplasm_labels, map_df_column_to_labels, props_df, viewer):
 
 @app.cell
 def _(cytoplasm_labels, map_df_column_to_labels, props_df, viewer):
-    # Visualize FRET ratios
+    # Visualize AF647 mean intensity (CXCL8 or CAV1)
     map_df_column_to_labels(
         cytoplasm_labels,
         props_df,
         value_column="AF647_CXCL8_mean_int",
         colormap="inferno",
+        colormap_vmin=0,
+        colormap_vmax=60,
         visualize=True,
         viewer=viewer,
     )
